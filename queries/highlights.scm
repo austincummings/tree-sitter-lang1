@@ -73,7 +73,7 @@
 (fn_decl name: (identifier) @function)
 (spec_fn_decl name: (identifier) @function)
 (axiom_decl name: (identifier) @function)
-(call_expr function: (identifier) @function.call)
+(call_expr function: (path (identifier) @function.call))
 (method_call_expr method: (identifier) @function.method)
 
 ; -- Type names --------------------------------------------------------------
@@ -84,8 +84,8 @@
 (interface_decl name: (identifier) @type.definition)
 (type_decl name: (identifier) @type.definition)
 (assoc_type_decl name: (identifier) @type)
-(impl_block type: (identifier) @type)
-(impl_block trait: (identifier) @type)
+(impl_block type: (path (identifier) @type))
+(impl_block trait: (path (identifier) @type))
 
 ; -- Constants ---------------------------------------------------------------
 
