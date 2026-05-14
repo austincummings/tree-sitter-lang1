@@ -13,8 +13,9 @@
 
 ; -- Control flow ------------------------------------------------------------
 
-["if" "else" "match" "while" "for" "loop" "return" "break" "continue" "in"]
+["if" "else" "match" "while" "for" "loop" "return" "break" "in"]
   @keyword.control
+(continue_expr) @keyword.control
 
 ; -- Proof / spec keywords ---------------------------------------------------
 
