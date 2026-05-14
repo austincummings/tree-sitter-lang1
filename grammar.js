@@ -234,10 +234,21 @@ module.exports = grammar({
 
     params: $ => commaSep1($.param),
 
-    param: $ => seq(
-      field('name', choice($.identifier, $.self, '_')),
-      ':',
-      field('type', $._expr),
+    param: $ => choice(
+      // Receiver shorthand: self, &self, &mut self (no explicit type)
+      $.self_param,
+      // Regular typed parameter:  name : Type   or   self : Type
+      seq(
+        field('name', choice($.identifier, $.self, '_')),
+        ':',
+        field('type', $._expr),
+      ),
+    ),
+
+    // `self`, `&self`, or `&mut self` as a method receiver.
+    self_param: $ => seq(
+      optional(seq('&', optional('mut'))),
+      $.self,
     ),
 
     // ───────────────────────────────────────────────────────────────────────
@@ -325,6 +336,7 @@ module.exports = grammar({
       optional(seq(':', field('type', $._expr))),
       ':=',
       field('value', $._term),
+      ';',
     ),
 
     type_decl: $ => seq(
@@ -334,6 +346,7 @@ module.exports = grammar({
       optional(field('type_params', $.type_params)),
       ':=',
       field('type', $._expr),
+      ';',
     ),
 
     // ───────────────────────────────────────────────────────────────────────
@@ -360,11 +373,16 @@ module.exports = grammar({
       'struct',
       field('name', $.identifier),
       optional(field('type_params', $.type_params)),
-      optional(choice(
+      choice(
+        // struct Foo { ... }    -- named, no trailing ;
         field('body', $.named_struct_body),
-        field('body', $.tuple_struct_body),
-        seq('{', '...', '}'),   // opaque stdlib body
-      )),
+        // struct Foo { ... }    -- opaque stdlib, no trailing ;
+        seq('{', '...', '}'),
+        // struct Foo(A, B);     -- tuple, requires ;
+        seq(field('body', $.tuple_struct_body), ';'),
+        // struct Foo;           -- unit
+        ';',
+      ),
     ),
 
     named_struct_body: $ => seq(
