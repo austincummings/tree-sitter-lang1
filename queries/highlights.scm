@@ -24,8 +24,15 @@
 ; -- Tactic keywords ---------------------------------------------------------
 
 ["intro" "apply" "exact" "have" "show" "cases" "induction" "simp"
- "linarith" "omega" "trivial" "rfl" "assumption" "constructor"
- "left" "right" "by_cases"] @keyword.special
+ "linarith" "by_cases"] @keyword.special
+
+(tactic_omega) @keyword.special
+(tactic_trivial) @keyword.special
+(tactic_rfl) @keyword.special
+(tactic_assumption) @keyword.special
+(tactic_constructor) @keyword.special
+(tactic_left) @keyword.special
+(tactic_right) @keyword.special
 
 ; -- Other keywords ----------------------------------------------------------
 
