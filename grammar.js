@@ -282,8 +282,7 @@ module.exports = grammar({
       '(',
       optional(field('params', $.params)),
       ')',
-      '->',
-      field('return_type', $._expr),
+      optional(seq('->', field('return_type', $._expr))),
       repeat(field('spec', $.spec_clause)),
       optional(field('where_clause', $.where_clause)),
       choice(
