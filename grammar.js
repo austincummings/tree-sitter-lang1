@@ -286,10 +286,11 @@ module.exports = grammar({
       field('return_type', $._expr),
       repeat(field('spec', $.spec_clause)),
       optional(field('where_clause', $.where_clause)),
-      optional(choice(
-        seq(':=', field('body', $._term)),
+      choice(
         ';',
-      )),
+        seq(':=', field('body', $._block_expr_no_semi)),
+        seq(':=', field('body', $._term), ';'),
+      ),
     ),
 
     // ───────────────────────────────────────────────────────────────────────
@@ -307,10 +308,11 @@ module.exports = grammar({
       ')',
       '->',
       field('return_type', $._expr),
-      optional(choice(
-        seq(':=', field('body', $._term)),
+      choice(
         ';',
-      )),
+        seq(':=', field('body', $._block_expr_no_semi)),
+        seq(':=', field('body', $._term), ';'),
+      ),
     ),
 
     // ───────────────────────────────────────────────────────────────────────

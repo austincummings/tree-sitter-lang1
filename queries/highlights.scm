@@ -2,35 +2,35 @@
 ; These are the canonical queries; the Zed extension copies them to its own
 ; languages/lang1/highlights.scm (Zed does not read from the grammar package).
 
-; ── Comments ────────────────────────────────────────────────────────────────
+; -- Comments ----------------------------------------------------------------
 
 (line_comment) @comment
 
-; ── Declaration keywords ─────────────────────────────────────────────────────
+; -- Declaration keywords ----------------------------------------------------
 
 ["fn" "spec" "const" "type" "struct" "enum" "interface" "impl" "axiom"
- "theorem" "use" "mod" "let" "var"] @keyword
+ "use" "let" "var"] @keyword
 
-; ── Control flow ─────────────────────────────────────────────────────────────
+; -- Control flow ------------------------------------------------------------
 
 ["if" "else" "match" "while" "for" "loop" "return" "break" "continue" "in"]
   @keyword.control
 
-; ── Proof / spec keywords ────────────────────────────────────────────────────
+; -- Proof / spec keywords ---------------------------------------------------
 
 ["requires" "ensures" "decreases" "by" "where"] @keyword.special
 
-; ── Tactic keywords ──────────────────────────────────────────────────────────
+; -- Tactic keywords ---------------------------------------------------------
 
 ["intro" "apply" "exact" "have" "show" "cases" "induction" "simp"
  "linarith" "omega" "trivial" "rfl" "assumption" "constructor"
  "left" "right" "by_cases"] @keyword.special
 
-; ── Other keywords ───────────────────────────────────────────────────────────
+; -- Other keywords ----------------------------------------------------------
 
-["as" "move" "with" "dyn"] @keyword
+["as" "move" "with" "dyn" "extern"] @keyword
 
-; ── Literals ─────────────────────────────────────────────────────────────────
+; -- Literals ----------------------------------------------------------------
 
 (bool_literal) @boolean
 (integer_literal) @number
@@ -38,29 +38,29 @@
 (string_literal) @string
 (char_literal) @character
 
-; ── Holes / todo ─────────────────────────────────────────────────────────────
+; -- Holes / todo ------------------------------------------------------------
 
 (hole) @variable.special
 (todo_kw) @variable.special
 
-; ── Universes ────────────────────────────────────────────────────────────────
+; -- Universes ---------------------------------------------------------------
 
 (universe) @type.builtin
 
-; ── Self ─────────────────────────────────────────────────────────────────────
+; -- Self --------------------------------------------------------------------
 
 (self) @variable.builtin
 (Self) @type.builtin
 
-; ── Attributes ───────────────────────────────────────────────────────────────
+; -- Attributes --------------------------------------------------------------
 
 (attribute) @attribute
 
-; ── Query commands ───────────────────────────────────────────────────────────
+; -- Query commands ----------------------------------------------------------
 
-(query_command (kind) @keyword.special)
+(query_command ["#check" "#eval" "#print" "#reduce"] @keyword.special)
 
-; ── Function names ───────────────────────────────────────────────────────────
+; -- Function names ----------------------------------------------------------
 
 (fn_decl name: (identifier) @function)
 (spec_fn_decl name: (identifier) @function)
@@ -68,7 +68,7 @@
 (call_expr function: (identifier) @function.call)
 (method_call_expr method: (identifier) @function.method)
 
-; ── Type names ───────────────────────────────────────────────────────────────
+; -- Type names --------------------------------------------------------------
 
 (struct_decl name: (identifier) @type.definition)
 (enum_decl name: (identifier) @type.definition)
@@ -76,22 +76,24 @@
 (interface_decl name: (identifier) @type.definition)
 (type_decl name: (identifier) @type.definition)
 (assoc_type_decl name: (identifier) @type)
+(impl_block type: (identifier) @type)
+(impl_block trait: (identifier) @type)
 
-; ── Constants ────────────────────────────────────────────────────────────────
+; -- Constants ---------------------------------------------------------------
 
 (const_decl name: (identifier) @constant)
 
-; ── Enum variants ────────────────────────────────────────────────────────────
+; -- Enum variants -----------------------------------------------------------
 
 (variant name: (identifier) @constructor)
 
-; ── Struct fields ────────────────────────────────────────────────────────────
+; -- Struct fields -----------------------------------------------------------
 
 (struct_field_item name: (identifier) @variable.member)
 (variant_field name: (identifier) @variable.member)
 (struct_field_init name: (identifier) @variable.member)
 
-; ── Type / value parameters ──────────────────────────────────────────────────
+; -- Type / value parameters -------------------------------------------------
 
 (bounded_param name: (identifier) @type.parameter)
 (type_params (identifier) @type.parameter)
@@ -99,29 +101,29 @@
 (closure_param name: (identifier) @variable.parameter)
 (pipe_closure_param name: (identifier) @variable.parameter)
 
-; ── Variable bindings ────────────────────────────────────────────────────────
+; -- Variable bindings -------------------------------------------------------
 
 (let_stmt pattern: (binding_pattern) @variable)
 (var_stmt name: (identifier) @variable)
 
-; ── Builtin types ────────────────────────────────────────────────────────────
+; -- Builtin types -----------------------------------------------------------
 
 ((identifier) @type.builtin
   (#match? @type.builtin
     "^(Nat|Int|Bool|Float|Char|String|Unit|Never|BitVec|Box|Vec|List|Option|Result|HashMap|HashSet|Alloc|IO|Panic|Effect|Lifetime|Universe|Seq|Prop)$"))
 
-; ── Capitalized identifiers treated as types ─────────────────────────────────
+; -- Capitalized identifiers treated as types --------------------------------
 
 ((identifier) @type
   (#match? @type "^[A-Z]"))
 
-; ── Operators ────────────────────────────────────────────────────────────────
+; -- Operators ---------------------------------------------------------------
 
 [":=" "=>" "->" "<->" ":" "::" "=" "==" "!=" "<" ">" "<=" ">="
  "+" "-" "*" "/" "%" "&" "|" "^" "<<" ">>" "&&" "||" "!" "?" ".." "..="]
   @operator
 
-; ── Punctuation ──────────────────────────────────────────────────────────────
+; -- Punctuation -------------------------------------------------------------
 
 ["(" ")" "[" "]" "{" "}"] @punctuation.bracket
 ["," ";" "."] @punctuation.delimiter
