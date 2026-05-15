@@ -45,6 +45,10 @@ module.exports = grammar({
     [$.path, $._type_param],
     // `(identifier)` — is it a closure param or a path expression?
     [$.path, $.closure_param],
+    // `(self, ...)` in pi_type position vs `(self_expr, ...)` in tuple/paren.
+    [$.self_param, $._expr_no_arrow],
+    // `(x: T, ...)` — pi_type's param vs closure's closure_param.
+    [$.param, $.closure_param],
     // `impl Trait + Trait` — is the second `+` extending the current impl_type?
     [$.impl_type],
     // `dyn Trait + Trait` — same issue for dyn_type
@@ -483,6 +487,7 @@ module.exports = grammar({
       field('name', $.identifier),
       optional(seq(':', field('bound', $._type_bound))),
       optional(seq(':=', field('default', $._expr))),
+      optional(';'),
     ),
 
     // ───────────────────────────────────────────────────────────────────────
@@ -617,6 +622,7 @@ module.exports = grammar({
       $.break_expr,
       $.continue_expr,
       $.by_tactic,
+      $.pi_type,
       $._expr,
     ),
 
@@ -632,6 +638,7 @@ module.exports = grammar({
       $.break_expr,
       $.continue_expr,
       $.by_tactic,
+      $.pi_type,
       $._expr,
     ),
 
@@ -767,9 +774,17 @@ module.exports = grammar({
 
     arg_list: $ => commaSep1($._term),
 
-    // &T  &mut T
+    // &T  &mut T  &a T  &a mut T
+    //
+    // The optional lifetime is a bare identifier between `&` and the type
+    // (Lang1 deliberately omits the Rust `'a` sigil — see design.md ~line 933).
+    // Disambiguation against `&x` (borrow of variable `x`): the lifetime form
+    // requires an additional type expression after the lifetime name. When
+    // both parses are possible (`&a Nat`), tree-sitter's GLR picks the one
+    // that consumes more tokens.
     reference_expr: $ => prec(PREC.UNARY, seq(
       '&',
+      optional(field('lifetime', $.identifier)),
       optional('mut'),
       field('type', $._expr_no_arrow),
     )),
@@ -836,12 +851,19 @@ module.exports = grammar({
     // (expr)  — grouping
     paren_expr: $ => seq('(', $._term, ')'),
 
-    // Pi type / closure prefix:  (x: T, y: U)
-    _param_list: $ => seq(
+    // Pi type with named parameters:  (x: Nat) -> P(x)
+    //
+    // The closure rule `(params) [-> ret] => body` shares the leading
+    // `(params) ->` prefix; tree-sitter's GLR explores both and picks the
+    // closure parse iff `=>` follows. Right-associative at IMPLIES so
+    // `(x: A) -> B -> C` parses as `(x: A) -> (B -> C)`.
+    pi_type: $ => prec.right(PREC.IMPLIES, seq(
       '(',
-      commaSep($.param),
+      optional(field('params', $.params)),
       ')',
-    ),
+      '->',
+      field('return_type', $._expr),
+    )),
 
     _paren_group: $ => seq(
       '(',
@@ -1177,11 +1199,13 @@ module.exports = grammar({
     _pattern_path: $ => $.path,
     path_pattern: $ => $.path,
 
-    // k + 1 (nat successor pattern)
+    // k + 1 (nat successor pattern). Only the literal `1` is permitted —
+    // the form binds the predecessor of a non-zero Nat. Other literals
+    // (including `0`) are syntactically rejected.
     nat_succ_pattern: $ => seq(
       field('var', $.identifier),
       '+',
-      field('n', $.integer_literal),
+      field('n', alias(token('1'), $.integer_literal)),
     ),
 
     // pattern as name

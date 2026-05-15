@@ -2540,6 +2540,18 @@
               "type": "BLANK"
             }
           ]
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": ";"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },
@@ -3078,6 +3090,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "pi_type"
+        },
+        {
+          "type": "SYMBOL",
           "name": "_expr"
         }
       ]
@@ -3112,6 +3128,10 @@
         {
           "type": "SYMBOL",
           "name": "by_tactic"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "pi_type"
         },
         {
           "type": "SYMBOL",
@@ -4065,6 +4085,22 @@
             "type": "CHOICE",
             "members": [
               {
+                "type": "FIELD",
+                "name": "lifetime",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                }
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
                 "type": "STRING",
                 "value": "mut"
               },
@@ -4444,63 +4480,50 @@
         }
       ]
     },
-    "_param_list": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "STRING",
-          "value": "("
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SEQ",
-              "members": [
-                {
+    "pi_type": {
+      "type": "PREC_RIGHT",
+      "value": 2,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "("
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "FIELD",
+                "name": "params",
+                "content": {
                   "type": "SYMBOL",
-                  "name": "param"
-                },
-                {
-                  "type": "REPEAT",
-                  "content": {
-                    "type": "SEQ",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": ","
-                      },
-                      {
-                        "type": "SYMBOL",
-                        "name": "param"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "type": "CHOICE",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": ","
-                    },
-                    {
-                      "type": "BLANK"
-                    }
-                  ]
+                  "name": "params"
                 }
-              ]
-            },
-            {
-              "type": "BLANK"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "STRING",
+            "value": ")"
+          },
+          {
+            "type": "STRING",
+            "value": "->"
+          },
+          {
+            "type": "FIELD",
+            "name": "return_type",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_expr"
             }
-          ]
-        },
-        {
-          "type": "STRING",
-          "value": ")"
-        }
-      ]
+          }
+        ]
+      }
     },
     "_paren_group": {
       "type": "SEQ",
@@ -6671,8 +6694,16 @@
           "type": "FIELD",
           "name": "n",
           "content": {
-            "type": "SYMBOL",
-            "name": "integer_literal"
+            "type": "ALIAS",
+            "content": {
+              "type": "TOKEN",
+              "content": {
+                "type": "STRING",
+                "value": "1"
+              }
+            },
+            "named": true,
+            "value": "integer_literal"
           }
         }
       ]
@@ -6735,6 +6766,14 @@
     ],
     [
       "path",
+      "closure_param"
+    ],
+    [
+      "self_param",
+      "_expr_no_arrow"
+    ],
+    [
+      "param",
       "closure_param"
     ],
     [
