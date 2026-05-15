@@ -1241,7 +1241,7 @@
                   "name": "body",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "_term"
+                    "name": "_inline_term"
                   }
                 },
                 {
@@ -1372,7 +1372,7 @@
                   "name": "body",
                   "content": {
                     "type": "SYMBOL",
-                    "name": "_term"
+                    "name": "_inline_term"
                   }
                 },
                 {
@@ -2923,24 +2923,24 @@
       ]
     },
     "expr_stmt": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "_term"
-        },
-        {
-          "type": "CHOICE",
+          "type": "SEQ",
           "members": [
+            {
+              "type": "SYMBOL",
+              "name": "_inline_term"
+            },
             {
               "type": "STRING",
               "value": ";"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "_block_expr_no_semi"
             }
           ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_block_expr_no_semi"
         }
       ]
     },
@@ -3048,6 +3048,43 @@
           "type": "SYMBOL",
           "name": "loop_expr"
         },
+        {
+          "type": "SYMBOL",
+          "name": "closure"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "pipe_closure"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "move_closure"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "return_expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "break_expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "continue_expr"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "by_tactic"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "_expr"
+        }
+      ]
+    },
+    "_inline_term": {
+      "type": "CHOICE",
+      "members": [
         {
           "type": "SYMBOL",
           "name": "closure"
@@ -6727,6 +6764,10 @@
     [
       "todo_kw",
       "tactic_todo"
+    ],
+    [
+      "_block_expr_no_semi",
+      "_term"
     ]
   ],
   "precedences": [],

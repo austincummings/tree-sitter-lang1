@@ -61,6 +61,10 @@ module.exports = grammar({
     [$.block, $.tactic_block],
     // `{ todo ; }` — is `todo` a tactic_todo or a todo_kw expression?
     [$.todo_kw, $.tactic_todo],
+    // `{ inner_block }` — is the inner block-expr a statement (its value
+    // discarded) or the outer block's final term (its value returned)?
+    // GLR explores both; the longer/final-term parse wins in practice.
+    [$._block_expr_no_semi, $._term],
   ],
 
   inline: $ => [
@@ -299,7 +303,7 @@ module.exports = grammar({
       choice(
         ';',
         seq(':=', field('body', $._block_expr_no_semi)),
-        seq(':=', field('body', $._term), ';'),
+        seq(':=', field('body', $._inline_term), ';'),
       ),
     ),
 
@@ -321,7 +325,7 @@ module.exports = grammar({
       choice(
         ';',
         seq(':=', field('body', $._block_expr_no_semi)),
-        seq(':=', field('body', $._term), ';'),
+        seq(':=', field('body', $._inline_term), ';'),
       ),
     ),
 
@@ -565,9 +569,9 @@ module.exports = grammar({
       seq('*', $._place_expr),
     ),
 
-    expr_stmt: $ => seq(
-      $._term,
-      choice(';', $._block_expr_no_semi),
+    expr_stmt: $ => choice(
+      seq($._inline_term, ';'),
+      $._block_expr_no_semi,
     ),
 
     // Block expressions that don't need a trailing semicolon
@@ -606,6 +610,21 @@ module.exports = grammar({
       $.while_let_expr,
       $.for_expr,
       $.loop_expr,
+      $.closure,
+      $.pipe_closure,
+      $.move_closure,
+      $.return_expr,
+      $.break_expr,
+      $.continue_expr,
+      $.by_tactic,
+      $._expr,
+    ),
+
+    // _term minus the block-form expressions (those whose own closing `}`
+    // already terminates them). Used in positions where a trailing `;` is
+    // required, so the block forms are excluded to prevent a redundant
+    // `};` after `fn f() := { ... }`.
+    _inline_term: $ => choice(
       $.closure,
       $.pipe_closure,
       $.move_closure,
