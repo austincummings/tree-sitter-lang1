@@ -33,10 +33,11 @@
 (tactic_constructor) @keyword.special
 (tactic_left) @keyword.special
 (tactic_right) @keyword.special
+(tactic_todo) @variable.special
 
 ; -- Other keywords ----------------------------------------------------------
 
-["as" "move" "with" "dyn" "extern"] @keyword
+["as" "move" "with" "dyn" "extern" "mut"] @keyword
 
 ; -- Literals ----------------------------------------------------------------
 
@@ -50,6 +51,7 @@
 
 (hole) @variable.special
 (todo_kw) @variable.special
+(wildcard_pattern) @variable.special
 
 ; -- Universes ---------------------------------------------------------------
 
@@ -57,8 +59,8 @@
 
 ; -- Self --------------------------------------------------------------------
 
-(self) @variable.builtin
-(Self) @type.builtin
+(self) @variable.special
+(Self) @type
 
 ; -- Attributes --------------------------------------------------------------
 
